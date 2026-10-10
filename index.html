@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dark Store Dispatch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <header>
+      <h1>Dark Store Dispatch</h1>
+      <p class="sub">Place orders, dark stores and drivers, then let the optimizer route them.</p>
+    </header>
+
+    <section class="panel" id="setupPanel">
+      <h2><span class="step">1</span>Setup</h2>
+      <div class="modes">
+        <button class="mode active" data-mode="delivery"><span class="sw sw-order"></span>Delivery<kbd>1</kbd></button>
+        <button class="mode" data-mode="store"><span class="sw sw-store"></span>Dark store<kbd>2</kbd></button>
+        <button class="mode" data-mode="driver"><span class="sw sw-driver"></span>Driver<kbd>3</kbd></button>
+      </div>
+      <p class="hint">Click the map to place. Right-click removes the nearest item.</p>
+      <div class="rand-grid">
+        <label for="nOrders">Deliveries</label><input id="nOrders" type="number" min="0" max="150" value="20"><button data-rand="orders" title="Randomize deliveries">Random</button>
+        <label for="nStores">Dark stores</label><input id="nStores" type="number" min="1" max="20" value="3"><button data-rand="stores" title="Randomize dark stores">Random</button>
+        <label for="nDrivers">Drivers</label><input id="nDrivers" type="number" min="1" max="10" value="4"><button data-rand="drivers" title="Randomize drivers">Random</button>
+      </div>
+      <div class="row">
+        <button id="randAll">Randomize all</button>
+        <button id="clearAll" class="ghost">Clear</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="step">2</span>Constraints</h2>
+      <div class="form">
+        <label for="speed">Driver speed</label><span><input id="speed" type="number" value="25" min="1" step="1"> km/h</span>
+        <label for="capacity">Capacity</label><span><input id="capacity" type="number" value="3" min="1" max="20"> orders</span>
+        <label for="pickup">Pickup time</label><span><input id="pickup" type="number" value="1" min="0" step="0.5"> min</span>
+        <label for="dropoff">Drop-off time</label><span><input id="dropoff" type="number" value="0.5" min="0" step="0.5"> min</span>
+        <label for="objective">Optimize for</label>
+        <select id="objective">
+          <option value="makespan">Finish all orders soonest</option>
+          <option value="average">Lowest average delivery time</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="step">3</span>Run</h2>
+      <div class="row">
+        <button id="planBtn">Preview plan</button>
+        <button id="startBtn" class="primary">Start</button>
+      </div>
+      <div class="row">
+        <button id="pauseBtn" disabled>Pause</button>
+        <button id="resetBtn" class="ghost" disabled>Reset</button>
+      </div>
+      <label class="slider" for="simSpeed">Sim speed
+        <input id="simSpeed" type="range" min="0.25" max="20" step="0.25" value="2">
+        <output id="simSpeedOut">2 min/s</output>
+      </label>
+      <div class="row">
+        <button id="spawnBtn" disabled>+ Random order</button>
+      </div>
+      <label class="check"><input id="autoSpawn" type="checkbox"> Auto-spawn an order every
+        <input id="spawnEvery" type="number" value="3" min="0.5" step="0.5"> min</label>
+      <p class="hint">While running, clicking the map places a new delivery and drivers re-plan.</p>
+    </section>
+  </aside>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><span class="k">Clock</span><span class="v" id="stClock">0.0 min</span></div>
+      <div class="stat"><span class="k">Delivered</span><span class="v" id="stDelivered">0 / 0</span></div>
+      <div class="stat"><span class="k">Avg delivery time</span><span class="v" id="stAvg">-</span></div>
+      <div class="stat"><span class="k">Planned finish</span><span class="v" id="stFinish">-</span></div>
+      <div class="stat"><span class="k">Planned distance</span><span class="v" id="stDist">-</span></div>
+      <span class="pill" id="stPhase">Setup</span>
+    </div>
+    <div class="map-wrap">
+      <canvas id="map"></canvas>
+      <div id="toast" role="status"></div>
+    </div>
+    <div class="bottom">
+      <div class="card">
+        <h3>Drivers</h3>
+        <table id="drivers">
+          <thead><tr><th>Driver</th><th>Status</th><th>On board</th><th>Delivered</th><th>Distance</th><th>Free at</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Event log</h3>
+        <ol id="log"></ol>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="optimizer.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
